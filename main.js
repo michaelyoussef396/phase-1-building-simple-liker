@@ -4,16 +4,51 @@ const FULL_HEART = '♥'
 
 // Your JavaScript code goes here!
 
+const modal = document.getElementById('modal');
+const modalMessage = document.getElementById('modal-message');
 
+modal.classList.add('hidden');
+
+function showErrorModal(message) {
+  modalMessage.textContent = message;
+  modal.classList.remove('hidden');
+  setTimeout(() => {
+    modal.classList.add('hidden');
+  }, 3000);
+}
+
+function likePost(post) {
+  const likeGlyph = post.querySelector('.like-glyph');
+  likeGlyph.addEventListener('click', () => {
+    mimicServerCall()
+      .then(() => {
+        if (likeGlyph.textContent === EMPTY_HEART) {
+          likeGlyph.textContent = FULL_HEART;
+          likeGlyph.classList.add('activated-heart');
+        } else {
+          likeGlyph.textContent = EMPTY_HEART;
+          likeGlyph.classList.remove('activated-heart');
+        }
+      })
+      .catch((error) => {
+        showErrorModal(error);
+      });
+  });
+}
+
+const posts = document.querySelectorAll('.media-post');
+posts.forEach((post) => {
+  likePost(post);
+});
 
 
 //------------------------------------------------------------------------------
 // Don't change the code below: this function mocks the server response
 //------------------------------------------------------------------------------
 
-function mimicServerCall(url="http://mimicServer.example.com", config={}) {
-  return new Promise(function(resolve, reject) {
-    setTimeout(function() {
+function mimicServerCall(url = "http://mimicServer.example.com", config = {}) {
+  return new Promise(function (resolve, reject) {
+    setTimeout(function () {
       let isRandomFailure = Math.random() < .2
       if (isRandomFailure) {
         reject("Random server error. Try again.");
